@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D3</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+
+  body {
+    font-family: 'Nanum Pen Script', cursive;
+  }
+
+  svg {
+    border: 1px solid gray;
+  }
+</style>
+<body>
+  <svg width="500px" height="500px">
+    <g>
+      <circle cy="50" cx="50" r="30"/>
+      <circle cy="150" cx="150" r="30"/>
+      <circle cy="250" cx="250" r="30"/>
+      <rect x="200" y="50" width="100" height="100" style="fill:chocolate; stroke:black;stroke-width:50px;"/>
+      <rect x="300" y="50" width="100" height="100" style="fill:chocolate; stroke:black;"/>
+      <path d="M 100,300 100,350 200,300 200,350" style="fill:blank"/>
+      <path d="M 300,300 300,350 350,350 350,300" style="fill:blank"/>
+      <text x="400" y="400">hello world</text>
+    </g>
+  </svg>
+  <div class="canvas"></div>
+  <script>
+    const canvas = d3.select('.canvas');
+
+    const svg = canvas.append('svg')
+      .attr('height', 600)
+      .attr('width', 600);
+
+    svg.append('text')
+      .attr('x', 50) // 텍스트는 좌표의 시작점이 좌측하단에 위치.
+      .attr('y', 50)
+      .text('hello world')
+      .style('font-size', '30px')
+      .style('font-weight', 'bold');
+    
+    svg.append('circle')
+      .attr('cx', 500)
+      .attr('cy', 100)
+      .attr('r', 50)
+      .style('fill', 'lime');
+
+    svg.append('rect')
+      .attr('x', 500)
+      .attr('y', 200)
+      .attr('width', 50)
+      .attr('height', 50)
+      .style('fill', 'purple');
+    
+    svg.append('line')
+    .attr('x1', 500)
+    .attr('y1', 100)
+    .attr('x2', 500)
+    .attr('y2', 200)
+    .attr('stroke', 'black');
+      
+  </script>
+</body>
+</html>   
