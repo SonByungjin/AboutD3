@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>d3</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <svg width="1000" height="1000"></svg>
+  <script>
+    const svg = d3.select('svg');
+    const numArr = [100, 30, 110, 40, 70, 60, 50];
+    const changeArr = [15, 72, 170, 121, 35, 88, 91];
+    const barWidth = 30;
+    const graphHeight = 200;
+    const duration = 1500;
+
+    numArr.forEach((el, idx) => {
+
+      svg.append('rect')
+        .attr('id', `bar${idx}`)
+        .attr('height', el)
+        .attr('width', barWidth)
+        .attr('x', (barWidth + 10) * idx)
+        .attr('y', graphHeight - el)
+        .style('fill', 'purple')
+        .transition()
+        .duration(duration)
+        .attr('height', changeArr[idx])
+        .attr('y', graphHeight - changeArr[idx])
+        .style('fill', 'pink');
+    })
+
+    d3.select('#bar2')
+      .transition()
+      .duration(1000)
+      .style('fill', 'red')
+      .delay(duration);
+
+
+  </script>
+</body>
+</html>
