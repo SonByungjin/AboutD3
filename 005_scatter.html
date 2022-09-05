@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>d3</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div class="enter"></div>
+  <div>
+    <svg class="exit">
+      <circle></circle>
+      <circle></circle>
+      <circle></circle>
+      <circle></circle>
+      <circle></circle>
+      <circle></circle>
+      <circle></circle>
+      <circle></circle>
+      <circle></circle>
+    </svg>
+</div>
+  <script>
+      const svgEnter = d3.select('.enter').append('svg').attr('width', 1000).attr('height', 300);
+      // svg 삽입 메서드를 사용하면 해당 svg를 반환한다
+
+      const svgExit = d3.select('.exit').attr('width', 1000).attr('height', 300);
+
+      const sampleData = []
+
+      for (let i = 0; i < 20; i++) {
+        sampleData.push([
+        Math.random() * 50,
+        Math.random() * 1000,
+        Math.random() * 300,
+        `hsl(${Math.random() * 360}, 100%, 50%)`,
+        ]);
+      };
+
+      svgEnter.selectAll('circle')
+        .data(sampleData)
+        .enter() // 데이터가 기존 태그보다 많을시 추가하는 메서드
+        .append('circle')
+        .attr('r', arr => arr[0])
+        .attr('cx', arr => arr[1])
+        .attr('cy', arr => arr[2])
+        .style('fill', arr => arr[3]);
+
+      svgExit.selectAll('circle')
+        .data(sampleData.slice(0,5))
+        .attr('r', arr => arr[0])
+        .attr('cx', arr => arr[1])
+        .attr('cy', arr => arr[2])
+        .style('fill', arr => arr[3])
+        .exit() // 데이터가 기존 태그보다 적을시 나오는 메서드
+        .remove(); // 데이터가 기존 태그보다 적을시 제거하는 메서드
+
+  </script>
+</body>
+</html>
