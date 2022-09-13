@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>csv</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div class="canvas"></div>
+  <script>
+    const svg = d3.select('.canvas').append('svg').attr('width', 1000).attr('height', 500);
+    
+    d3.csv('assets/load/data2.csv')
+      .then((data) => {
+        console.log(data);
+        data.forEach((el) => {
+          // 데이터의 분포도를 알맞게 산개시키기 위해서 x축, y축 값을 조정
+          svg.append('circle')
+            .attr('cx', (el.위도 - 33.15) * 1500 + 10)
+            .attr('cy', (el.경도 -  126) * 300 + 10)
+            .attr('r', 5)
+            .style('fill', 'red');
+        })
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+
+  </script>
+</body>
+</html>
