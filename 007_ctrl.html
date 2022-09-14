@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ctrl</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <script>
+    // *** range: 변환 후의 값 / domain: 변환 전의 값.
+    // scalePoint: range 범위 지정, domain 개수에 따라 간격을 일정하게 두어 각 지점의 위치를 출력.
+    // padding 은 양끝 지점의 두는 여백의 정도를 지정할 수 있는 메서드
+    const point = d3.scalePoint().range([0, 100]).domain(['a', 'b', 'c', 'd', 'e']).padding(0.3);
+    console.log(point('b'));
+
+    // scaleLinear: domain 범위의 자료를 range 범위 비율에 맞추어 변환시킨 값을 출력.
+    const linear = d3.scaleLinear().range([0, 100]).domain([123, 777]);
+    console.log(linear(300));
+
+    // 주로 scalePoint는 x 좌표, scaleLinear는 y 좌표로 사용된다
+
+    // scaleBand: 들어온 값의 위치를 출력.
+    // scalePoint 와의 차이점: 그래프 사이의 간격이나 정렬 등의 디테일한 설정이 가능하다.
+    const band = d3.scaleBand().range([0, 100]).domain(['a', 'b', 'c', 'd', 'e']);
+    console.log(band('c'));
+    console.log(band.bandwidth());
+
+
+    const data1 = [10, 20, 30];
+    const data2 = [{
+      age: 12,
+      power: 77,
+    }, {
+      age: 44,
+      power: 120,
+    }, {
+      age: 31,
+      power: 200,
+    }];
+
+    const min1 = d3.min(data1);
+    const min2 = d3.min(data2, el => el.age);
+
+    const max1 = d3.max(data1);
+    const max2 = d3.max(data2, el => el.power);
+
+    const extent = d3.extent(data1); // return [min, max]
+    const [min3, max3] = d3.extent(data2, el => el.age);
+
+    const mean1 = d3.mean(data1);
+    const mean2 = d3.mean(data2, el => el.power);
+
+    console.log(min1, min2, max1, max2, extent, [min3, max3], mean1, mean2);
+  </script>
+</body>
+</html>
