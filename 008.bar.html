@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>d3</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <h1>확진자수 현황</h1>
+  <div class="canvas"></div>
+  <script>
+    const width = 800;
+    const height = 800;
+    const [mt, mb, mr, ml] = new Array(4).fill(20);
+    const graphHeight = height - (mt + mb);
+    const graphWidth = width - (mr + ml);
+
+    const svg = d3.select('.canvas')
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
+
+                  // 'g' 그룹으로 묶어서 다루기 위해 활용
+    const graph = svg.append('g')
+                      .attr('width', width)
+                      .attr('height', height)
+                      .attr('transform', `translate(${ml}, ${mt})`);
+
+    const xAxisG = graph.append('g')
+                          .attr('transform', `translate(0, ${graphHeight})`);
+    
+    const yAxisG = graph.append('g')
+                          .attr('transform', `translate(0, 0)`);
+
+    d3.json('assets/load/data4.json')
+        .then( rslt => {
+          // 첫번째 데이터를 제거하기위한 비구조화 할당 문법
+          [_, ...rslt] = [...rslt];
+          const x = d3.scaleBand()
+                        .domain(rslt.map(el => el['지역이름']))
+                        .range([0, graphWidth])
+                        .padding(0.25);
+
+          // range 범위가 거꾸로인 이유: y 좌표는 좌측상단을 기준으로 지정되며, 막대그래프의 높이를 계산하는 방식 때문에
+          const y = d3.scaleLinear()
+                        .domain([0, d3.max(rslt, el => el['확진자수'])])
+                        .range([graphHeight, 0]);
+
+          // 막대 변수 선언
+          const bar = graph.selectAll('rect').data(rslt);
+
+          rslt.forEach((el) => {
+            const position_x = x(el['지역이름']);
+            const position_y = y(el['확진자수']);
+
+            bar.enter()
+              .append('rect')
+              .attr('width', 30)
+              .attr('height', graphHeight - position_y) // 전체 그래프 높이 - y 좌표
+              .attr('x', position_x)
+              .attr('y', position_y)
+              .style('fill', 'blue');
+            
+            bar.enter()
+              .append('text')
+              .attr('x', position_x)
+              .attr('y', position_y)
+              .text(el['확진자수']);
+            
+          })
+
+          const xAxis = d3.axisBottom(x);
+          const yAxis = d3.axisLeft(y);
+
+          xAxisG.call(xAxis);
+          yAxisG.call(yAxis);
+        })
+        .catch( err => {
+          console.log(err);
+        })
+  </script>
+</body>
+</html>
