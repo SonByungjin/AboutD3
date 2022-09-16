@@ -13,7 +13,7 @@
   <script>
     const width = 800;
     const height = 800;
-    const [mt, mb, mr, ml] = new Array(4).fill(20);
+    const [mt, mb, mr, ml] = [20, 20, 100, 20];
     const graphHeight = height - (mt + mb);
     const graphWidth = width - (mr + ml);
 
@@ -26,7 +26,7 @@
     const graph = svg.append('g')
                       .attr('width', width)
                       .attr('height', height)
-                      .attr('transform', `translate(${ml}, ${mt})`);
+                      .attr('transform', `translate(${ml + 50}, ${mt})`);
 
     const xAxisG = graph.append('g')
                           .attr('transform', `translate(0, ${graphHeight})`);
@@ -51,6 +51,13 @@
           // 막대 변수 선언
           const bar = graph.selectAll('rect').data(rslt);
 
+          // 선 변수 선언
+          const line = d3.line()
+                            .x(el => x(el['지역이름']) + 15)
+                            .y(el => y(el['확진자수']))
+                            .curve(d3.curveBasis);
+
+          // 막대 그리기
           rslt.forEach((el) => {
             const position_x = x(el['지역이름']);
             const position_y = y(el['확진자수']);
@@ -71,8 +78,18 @@
             
           })
 
+          // 선 그리기
+          bar.enter()
+                .append('path')
+                .attr('fill', 'none')
+                .attr('stroke', 'red')
+                .attr('stroke-width', '2px')
+                .attr('d', line(rslt));
+
           const xAxis = d3.axisBottom(x);
-          const yAxis = d3.axisLeft(y);
+          const yAxis = d3.axisLeft(y)
+                            .ticks(3)
+                            .tickFormat(d => d + '명');
 
           xAxisG.call(xAxis);
           yAxisG.call(yAxis);
