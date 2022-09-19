@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>d3</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <h1>확진자수 현황</h1>
+  <div class="canvas"></div>
+  <script>
+    const LOCATION = '지역이름';
+    const PEOPLE = '확진자수';
+    const width = 800;
+    const height = 800;
+    const [mt, mb, mr, ml] = [120, 20, 100, 20];
+    const graphHeight = height - (mt + mb);
+    const graphWidth = width - (mr + ml);
+
+    const svg = d3.select('.canvas')
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
+
+    const graph = svg.append('g')
+                      .attr('width', width)
+                      .attr('height', height)
+                      .attr('transform', `translate(${ml + 50}, ${mt})`);
+
+    d3.json('assets/load/data4.json')
+        .then( rslt => {
+          [_, ...rslt] = [...rslt];
+          const x = d3.scaleBand()
+                        .domain(rslt.map(el => el[LOCATION]))
+                        .range([0, graphWidth])
+                        .padding(0.25);
+
+          const y = d3.scaleLinear()
+                        .domain([0, d3.max(rslt, el => el[PEOPLE])])
+                        .range([graphHeight, 0]);
+
+          // 산점도 변수 선언
+          const scatter = graph.selectAll('circle').data(rslt);
+
+          // 원 그리기
+          scatter.enter()
+            .append('circle')
+            .style('fill', 'hotpink')
+            .attr('cx', el => x(el[LOCATION]))
+            .attr('cy', el => y(el[PEOPLE]))
+            .attr('r', el => el[PEOPLE]/100);
+
+          scatter.enter()
+            .append('text')
+            .attr('x', el => x(el[LOCATION]))
+            .attr('y', el => y(el[PEOPLE]))
+            .text(el => el[PEOPLE]);
+
+        })
+        .catch( err => {
+          console.log(err);
+        })
+  </script>
+</body>
+</html>
