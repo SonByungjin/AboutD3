@@ -11,6 +11,8 @@
   <h1>확진자수 현황</h1>
   <div class="canvas"></div>
   <script>
+    const LOCATION = '지역이름';
+    const PEOPLE = '확진자수';
     const width = 800;
     const height = 800;
     const [mt, mb, mr, ml] = [20, 20, 100, 20];
@@ -28,6 +30,7 @@
                       .attr('height', height)
                       .attr('transform', `translate(${ml + 50}, ${mt})`);
 
+                  //  x축, y축을 위치시킬 함수 생성
     const xAxisG = graph.append('g')
                           .attr('transform', `translate(0, ${graphHeight})`);
     
@@ -39,13 +42,13 @@
           // 첫번째 데이터를 제거하기위한 비구조화 할당 문법
           [_, ...rslt] = [...rslt];
           const x = d3.scaleBand()
-                        .domain(rslt.map(el => el['지역이름']))
+                        .domain(rslt.map(el => el[LOCATION]))
                         .range([0, graphWidth])
                         .padding(0.25);
 
           // range 범위가 거꾸로인 이유: y 좌표는 좌측상단을 기준으로 지정되며, 막대그래프의 높이를 계산하는 방식 때문에
           const y = d3.scaleLinear()
-                        .domain([0, d3.max(rslt, el => el['확진자수'])])
+                        .domain([0, d3.max(rslt, el => el[PEOPLE])])
                         .range([graphHeight, 0]);
 
           // 막대 변수 선언
@@ -53,30 +56,24 @@
 
           // 선 변수 선언
           const line = d3.line()
-                            .x(el => x(el['지역이름']) + 15)
-                            .y(el => y(el['확진자수']))
+                            .x(el => x(el[LOCATION]) + 15)
+                            .y(el => y(el[PEOPLE]))
                             .curve(d3.curveBasis);
 
           // 막대 그리기
-          rslt.forEach((el) => {
-            const position_x = x(el['지역이름']);
-            const position_y = y(el['확진자수']);
-
-            bar.enter()
-              .append('rect')
-              .attr('width', 30)
-              .attr('height', graphHeight - position_y) // 전체 그래프 높이 - y 좌표
-              .attr('x', position_x)
-              .attr('y', position_y)
-              .style('fill', 'blue');
-            
-            bar.enter()
-              .append('text')
-              .attr('x', position_x)
-              .attr('y', position_y)
-              .text(el['확진자수']);
-            
-          })
+          bar.enter()
+            .append('rect')
+            .attr('width', 30)
+            .attr('height', el => graphHeight - y(el[PEOPLE])) // 전체 그래프 높이 - y 좌표
+            .attr('x', el => x(el[LOCATION]))
+            .attr('y', el => y(el[PEOPLE]))
+            .style('fill', 'blue');
+          
+          bar.enter()
+            .append('text')
+            .attr('x', el => x(el[LOCATION]))
+            .attr('y', el => y(el[PEOPLE]))
+            .text(el => el[PEOPLE]);
 
           // 선 그리기
           bar.enter()
@@ -86,11 +83,13 @@
                 .attr('stroke-width', '2px')
                 .attr('d', line(rslt));
 
+          // x축, y축 선 구현 변수 선언
           const xAxis = d3.axisBottom(x);
           const yAxis = d3.axisLeft(y)
                             .ticks(3)
                             .tickFormat(d => d + '명');
 
+          // x축, y축 호출
           xAxisG.call(xAxis);
           yAxisG.call(yAxis);
         })
