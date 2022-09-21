@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>d3</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div class="canvas">
+    <svg>
+      <path></path>
+      <path></path>
+      <path></path>
+      <path></path>
+      <path></path>
+      <path></path>
+      <path></path>
+      <path></path>
+    </svg>
+  </div>
+  <script>
+    const data = [5, 5, 10, 14, 15, 32, 21, 10];
+    // x, y 좌표 함수 생성
+    const xfunc = (el, idx) => idx * 10;
+    const yfunc = (el, idx) => 100 - el;
+
+    const svg = d3.select('svg').attr('width', 500).attr('height', 500);
+    
+    // coonst f = d3.line().x().y().curve() 형태로 선언
+    // f(data) 형태로 실행
+    const line = d3.line()
+                  .x(xfunc)
+                  .y(yfunc)
+                  .curve(d3.curveBasis);
+
+    svg.selectAll('path')
+        .attr('fill', 'none')
+        .attr('stroke', 'black')
+        .attr('stroke-width', '2px')
+        .attr('d', line(data));
+
+  </script>
+</body>
+</html>
