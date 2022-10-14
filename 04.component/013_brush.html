@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>d3</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        rect:hover {
+            stroke: black;
+            stroke-width: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>확진자수 현황</h1>
+    <div class="canvas"></div>
+    <script>
+      const LOCATION = '지역이름';
+      const PEOPLE = '확진자수';
+      const width = 800;
+      const height = 800;
+      const [mt, mb, mr, ml] = [20, 20, 100, 20];
+      const graphHeight = height - (mt + mb);
+      const graphWidth = width - (mr + ml);
+  
+      const svg = d3.select('.canvas')
+                      .append('svg')
+                      .attr('width', width)
+                      .attr('height', height);
+
+
+      // 컴포넌트(기능 모듈)의 경우 공홈 레퍼런스에서 코드를 가져와 기존 그래프에 적용시키는 방법이 효율적이다
+      // brush 기능: 그래프 위에서 드래그로 영역을 선택할 수 있는 기능
+      const brush = d3.brush()
+        .on("start brush end", brushed);
+
+      // 선택된 영역에서 추가 작업을 하고 싶다면 아래 함수를 수정하면 된다
+      function brushed({selection}) {
+        let value = [];
+        if (selection) {
+          const [[x0, y0], [x1, y1]] = selection;
+          value = dot
+            .style("stroke", "gray")
+            .filter(d => x0 <= x(d.x) && x(d.x) < x1 && y0 <= y(d.y) && y(d.y) < y1)
+            .style("stroke", "steelblue")
+            .data();
+        } else {
+          dot.style("stroke", "steelblue");
+        }
+        svg.property("value", value).dispatch("input");
+      }
+                      
+      svg.call(brush);
+
+      /*--------------------------------------------------------*/
+
+      const graph = svg.append('g')
+                        .attr('width', width)
+                        .attr('height', height)
+                        .attr('transform', `translate(${ml + 50}, ${mt})`);
+  
+      const xAxisG = graph.append('g')
+                            .attr('transform', `translate(0, ${graphHeight})`);
+      
+      const yAxisG = graph.append('g')
+                            .attr('transform', `translate(0, 0)`);
+  
+      d3.json('../02.data/assets/load/data4.json')
+          .then( rslt => {
+            [_, ...rslt] = [...rslt];
+            const x = d3.scaleBand()
+                          .domain(rslt.map(el => el[LOCATION]))
+                          .range([0, graphWidth])
+                          .padding(0.25);
+  
+            const y = d3.scaleLinear()
+                          .domain([0, d3.max(rslt, el => el[PEOPLE])])
+                          .range([graphHeight, 0]);
+  
+            const bar = graph.selectAll('rect').data(rslt);
+  
+            const line = d3.line()
+                              .x(el => x(el[LOCATION]) + 15)
+                              .y(el => y(el[PEOPLE]))
+                              .curve(d3.curveBasis);
+  
+            bar.enter()
+              .append('rect')
+              .attr('width', 30)
+              .attr('height', el => graphHeight - y(el[PEOPLE])) // 전체 그래프 높이 - y 좌표
+              .attr('x', el => x(el[LOCATION]))
+              .attr('y', el => y(el[PEOPLE]))
+              .style('fill', 'blue');
+            
+            bar.enter()
+              .append('text')
+              .attr('x', el => x(el[LOCATION]))
+              .attr('y', el => y(el[PEOPLE]))
+              .text(el => el[PEOPLE]);
+  
+            bar.enter()
+                  .append('path')
+                  .attr('fill', 'none')
+                  .attr('stroke', 'red')
+                  .attr('stroke-width', '2px')
+                  .attr('d', line(rslt));
+  
+            const xAxis = d3.axisBottom(x);
+            const yAxis = d3.axisLeft(y)
+                              .ticks(3)
+                              .tickFormat(d => d + '명');
+  
+            xAxisG.call(xAxis);
+            yAxisG.call(yAxis);
+          })
+          .catch( err => {
+            console.log(err);
+          })
+
+
+
+    </script>
+</body>
+</html>
