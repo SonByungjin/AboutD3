@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>d3</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="canvas"></div>
+    <script>
+        const svg = d3.select('.canvas')
+            .append('svg')
+            .attr('width', 500)
+            .attr('height', 500);
+
+        // g는 그룹을 의미하는 태그
+        const g = svg.append('g')
+            .attr('transform', 'translate(150, 150)');
+        
+        const data = [50, 150, 100, 200];
+        const f = d3.arc()
+            .innerRadius(40)
+            .outerRadius(100);
+
+        const pie = d3.pie() // pie는 레이아웃?
+            .sort((a, b) => b - a) // 내림차순
+            .value(d => d); // 만약 객체라면 d.value 식으로 받는다.
+        
+        // console.log(f(data));
+
+        // 객체 배열을 리턴 {data, index, value, startAngle, endAngle, padAngle}
+        // console.log(pie(data));
+
+        g.selectAll('path')
+            .data(pie(data))
+            .enter()
+            .append('path')
+            .attr('fill', 'pink')
+            .attr('stroke', 'blue')
+            .attr('stroke-width', '2px')
+            .attr('d', (d) => {
+                // d 는 pie(data) 객체 배열의 각 요소이다
+                console.log(d);
+                return f(d);
+            });
+
+    </script>
+</body>
+</html>
